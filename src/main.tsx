@@ -64,6 +64,7 @@ export const Dashboard = () => {
         sectorSymbols
     );
 
+    const filteredStockData = useMemo(() => {
         let data = stockDataRaw.stockData;
 
         if (volumeBreakout) {
