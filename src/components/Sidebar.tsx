@@ -21,43 +21,45 @@ export const sectorIndexMap: Record<string, string> = {
 
 type SidebarProps = {
     onSelectSector: (sector: string, indexName: string) => void;
+    selectedSector: string;
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({ onSelectSector }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ onSelectSector, selectedSector }) => {
     const [collapsed, setCollapsed] = useState(false);
 
     const toggleCollapse = () => setCollapsed(!collapsed);
 
     return (
         <div
-            style={{
-                width: collapsed ? "60px" : "250px",
-                borderRight: "1px solid #ccc",
-                height: "100vh",
-                overflowY: "auto",
-                transition: "width 0.3s",
-            }}
+            className="apollo-sidebar"
+            style={{ width: collapsed ? "60px" : "280px" }}
         >
-            <button onClick={toggleCollapse} style={{ width: "100%", padding: 8 }}>
-                {collapsed ? "➡️" : "⬅️ Collapse"}
+            <button 
+                className="apollo-btn apollo-btn-secondary" 
+                onClick={toggleCollapse} 
+                style={{ width: "100%", margin: 'var(--apollo-space-4)', borderRadius: 'var(--apollo-radius-md)' }}
+            >
+                {collapsed ? "→" : "← Collapse"}
             </button>
             {!collapsed && (
-                <ul style={{ listStyle: "none", padding: 0, marginTop: 16 }}>
+                <div style={{ padding: '0 var(--apollo-space-4) var(--apollo-space-4)' }}>
+                    <h3 className="apollo-heading-3" style={{ marginBottom: 'var(--apollo-space-4)' }}>
+                        Sectors
+                    </h3>
+                </div>
+            )}
+            {!collapsed && (
+                <div>
                     {Object.entries(sectorIndexMap).map(([sector, index]) => (
-                        <li
+                        <div
                             key={sector}
-                            style={{
-                                padding: "8px 16px",
-                                cursor: "pointer",
-                                borderBottom: "1px solid #eee",
-                                userSelect: "none",
-                            }}
+                            className={`apollo-sidebar-item ${selectedSector === sector ? 'active' : ''}`}
                             onClick={() => onSelectSector(sector, index)}
                         >
                             {sector}
-                        </li>
+                        </div>
                     ))}
-                </ul>
+                </div>
             )}
         </div>
     );

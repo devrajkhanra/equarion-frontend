@@ -11,38 +11,50 @@ type IndiceData = {
 };
 
 export const IndiceTable: React.FC<{ data?: IndiceData[] }> = ({ data }) => {
-    if (!data || data.length === 0) return <p>No indice data available.</p>;
+    if (!data || data.length === 0) {
+        return (
+            <div className="apollo-loading">
+                <p>No indice data available.</p>
+            </div>
+        );
+    }
 
     return (
-        <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 16 }}>
+        <div className="apollo-card">
+            <div className="apollo-card-header">
+                <h3 className="apollo-heading-3">Index Data</h3>
+                <p className="apollo-text-muted" style={{ margin: 0, fontSize: 'var(--apollo-font-size-sm)' }}>
+                    {data.length} records found
+                </p>
+            </div>
+            <div style={{ overflowX: 'auto' }}>
+                <table className="apollo-table">
             <thead>
                 <tr>
-                    {[
-                        "Index Name",
-                        "Date",
-                        "Open",
-                        "High",
-                        "Low",
-                        "Close",
-                        "Volume",
-                    ].map((header) => (
-                        <th key={header} style={{ border: "1px solid #ccc", padding: 8 }}>{header}</th>
-                    ))}
+                        <th>Index Name</th>
+                        <th>Date</th>
+                        <th>Open</th>
+                        <th>High</th>
+                        <th>Low</th>
+                        <th>Close</th>
+                        <th>Volume</th>
                 </tr>
             </thead>
             <tbody>
                 {data.map((row, idx) => (
                     <tr key={`${row.IndexName}-${row.IndexDate}-${idx}`}>
-                        <td style={{ border: "1px solid #ccc", padding: 8 }}>{row.IndexName}</td>
-                        <td style={{ border: "1px solid #ccc", padding: 8 }}>{row.IndexDate}</td>
-                        <td style={{ border: "1px solid #ccc", padding: 8 }}>{row.OpenIndexValue}</td>
-                        <td style={{ border: "1px solid #ccc", padding: 8 }}>{row.HighIndexValue}</td>
-                        <td style={{ border: "1px solid #ccc", padding: 8 }}>{row.LowIndexValue}</td>
-                        <td style={{ border: "1px solid #ccc", padding: 8 }}>{row.ClosingIndexValue}</td>
-                        <td style={{ border: "1px solid #ccc", padding: 8 }}>{row.Volume}</td>
+                            <td style={{ fontWeight: '600' }}>{row.IndexName}</td>
+                            <td>{row.IndexDate}</td>
+                            <td>{parseFloat(row.OpenIndexValue).toLocaleString()}</td>
+                            <td>{parseFloat(row.HighIndexValue).toLocaleString()}</td>
+                            <td>{parseFloat(row.LowIndexValue).toLocaleString()}</td>
+                            <td>{parseFloat(row.ClosingIndexValue).toLocaleString()}</td>
+                            <td>{parseInt(row.Volume).toLocaleString()}</td>
                     </tr>
                 ))}
             </tbody>
-        </table>
+                </table>
+            </div>
+        </div>
     );
 };
