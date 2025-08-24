@@ -30,36 +30,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ onSelectSector, selectedSector
     const toggleCollapse = () => setCollapsed(!collapsed);
 
     return (
-        <div
-            className="apollo-sidebar"
-            style={{ width: collapsed ? "60px" : "280px" }}
-        >
-            <button 
-                className="apollo-btn apollo-btn-secondary" 
-                onClick={toggleCollapse} 
-                style={{ width: "100%", margin: 'var(--apollo-space-4)', borderRadius: 'var(--apollo-radius-md)' }}
-            >
+        <div>
+            <button className="apollo-btn apollo-btn-sm" onClick={toggleCollapse}>
                 {collapsed ? "→" : "← Collapse"}
             </button>
+
             {!collapsed && (
-                <div style={{ padding: '0 var(--apollo-space-4) var(--apollo-space-4)' }}>
-                    <h3 className="apollo-heading-3" style={{ marginBottom: 'var(--apollo-space-4)' }}>
-                        Sectors
-                    </h3>
-                </div>
-            )}
-            {!collapsed && (
-                <div>
-                    {Object.entries(sectorIndexMap).map(([sector, index]) => (
-                        <div
-                            key={sector}
-                            className={`apollo-sidebar-item ${selectedSector === sector ? 'active' : ''}`}
-                            onClick={() => onSelectSector(sector, index)}
-                        >
-                            {sector}
-                        </div>
-                    ))}
-                </div>
+                <>
+                    <h2>Sectors</h2>
+                    <ul style={{ listStyleType: "none", padding: 0 }}>
+                        {Object.entries(sectorIndexMap).map(([sector, index]) => (
+                            <li
+                                key={sector}
+                                className={`apollo-sidebar-item ${selectedSector === sector ? "active" : ""}`}
+                                onClick={() => onSelectSector(sector, index)}
+                                style={{ cursor: "pointer" }}
+                            >
+                                {sector}
+                            </li>
+                        ))}
+                    </ul>
+                </>
             )}
         </div>
     );
