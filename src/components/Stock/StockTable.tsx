@@ -59,8 +59,8 @@ export const StockTable: React.FC<{
                         <th>Volume</th>
                         <th>Delivery Qty</th>
                         <th>Delivery %</th>
-                        {volumeBreakouts.length > 0 && <th>Vol Ratio</th>}
-                        {deliveryBreakouts.length > 0 && <th>Del Ratio</th>}
+                        {volumeBreakouts.length > 0 && <th>Volume Breakout</th>}
+                        {deliveryBreakouts.length > 0 && <th>Delivery Breakout</th>}
                 </tr>
             </thead>
             <tbody>
@@ -79,24 +79,48 @@ export const StockTable: React.FC<{
                             {volumeBreakouts.length > 0 && (
                                 <td>
                                     {volumeBreakoutMap[row.SYMBOL] ? (
-                                        <span style={{ 
+                                        <div style={{ 
                                             color: volumeBreakoutMap[row.SYMBOL].ratio > 1 ? 'var(--apollo-success)' : 'var(--apollo-error)',
-                                            fontWeight: '600'
+                                            fontWeight: '600',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 'var(--apollo-space-2)'
                                         }}>
                                             {volumeBreakoutMap[row.SYMBOL].ratio}x
-                                        </span>
+                                            <span style={{
+                                                padding: 'var(--apollo-space-1)',
+                                                borderRadius: 'var(--apollo-radius-sm)',
+                                                fontSize: 'var(--apollo-font-size-xs)',
+                                                backgroundColor: volumeBreakoutMap[row.SYMBOL].ratio > 1 ? 'var(--apollo-success)' : 'var(--apollo-error)',
+                                                color: 'white'
+                                            }}>
+                                                {volumeBreakoutMap[row.SYMBOL].ratio > 1 ? '↑' : '↓'}
+                                            </span>
+                                        </div>
                                     ) : '-'}
                                 </td>
                             )}
                             {deliveryBreakouts.length > 0 && (
                                 <td>
                                     {deliveryBreakoutMap[row.SYMBOL] ? (
-                                        <span style={{ 
+                                        <div style={{ 
                                             color: deliveryBreakoutMap[row.SYMBOL].ratio > 1 ? 'var(--apollo-success)' : 'var(--apollo-error)',
-                                            fontWeight: '600'
+                                            fontWeight: '600',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 'var(--apollo-space-2)'
                                         }}>
                                             {deliveryBreakoutMap[row.SYMBOL].ratio}x
-                                        </span>
+                                            <span style={{
+                                                padding: 'var(--apollo-space-1)',
+                                                borderRadius: 'var(--apollo-radius-sm)',
+                                                fontSize: 'var(--apollo-font-size-xs)',
+                                                backgroundColor: deliveryBreakoutMap[row.SYMBOL].ratio > 1 ? 'var(--apollo-success)' : 'var(--apollo-error)',
+                                                color: 'white'
+                                            }}>
+                                                {deliveryBreakoutMap[row.SYMBOL].ratio > 1 ? '↑' : '↓'}
+                                            </span>
+                                        </div>
                                     ) : '-'}
                                 </td>
                             )}

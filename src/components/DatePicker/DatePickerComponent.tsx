@@ -82,6 +82,14 @@ export const DatePickerComponent: React.FC<DatePickerProps> = ({ onChange }) => 
     setCurrentMonth(newMonth);
   };
 
+  const goToCurrentWeek = () => {
+    setCurrentWeekStart(getWeekStart(new Date()));
+  };
+
+  const goToCurrentMonth = () => {
+    setCurrentMonth(new Date());
+  };
+
   const formatWeekRange = (weekStart: Date) => {
     const weekEnd = getWeekEnd(weekStart);
     return `${weekStart.toLocaleDateString()} - ${weekEnd.toLocaleDateString()}`;
@@ -163,6 +171,11 @@ export const DatePickerComponent: React.FC<DatePickerProps> = ({ onChange }) => 
                 Next Week →
               </button>
             </div>
+            <div className="apollo-flex apollo-items-center" style={{ marginBottom: 'var(--apollo-space-4)', justifyContent: 'center' }}>
+              <button className="apollo-btn apollo-btn-accent apollo-btn-sm" onClick={goToCurrentWeek}>
+                Go to Current Week
+              </button>
+            </div>
             <div style={{ fontSize: 'var(--apollo-font-size-sm)', color: 'var(--apollo-text-muted)' }}>
               Business days only (Monday - Friday)
             </div>
@@ -181,6 +194,11 @@ export const DatePickerComponent: React.FC<DatePickerProps> = ({ onChange }) => 
               </span>
               <button className="apollo-btn apollo-btn-secondary apollo-btn-sm" onClick={() => navigateMonth('next')}>
                 Next Month →
+              </button>
+            </div>
+            <div className="apollo-flex apollo-items-center" style={{ marginBottom: 'var(--apollo-space-4)', justifyContent: 'center' }}>
+              <button className="apollo-btn apollo-btn-accent apollo-btn-sm" onClick={goToCurrentMonth}>
+                Go to Current Month
               </button>
             </div>
             <div style={{ fontSize: 'var(--apollo-font-size-sm)', color: 'var(--apollo-text-muted)' }}>

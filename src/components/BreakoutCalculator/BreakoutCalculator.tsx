@@ -55,7 +55,11 @@ export const BreakoutCalculator: React.FC<BreakoutCalculatorProps> = ({
 
     Object.entries(symbolGroups).forEach(([symbol, data]) => {
       // Sort by date
-      const sortedData = data.sort((a, b) => a.DATE1.localeCompare(b.DATE1));
+      const sortedData = data.sort((a, b) => {
+        const dateA = a.DATE1.replace(/\D/g, '');
+        const dateB = b.DATE1.replace(/\D/g, '');
+        return dateA.localeCompare(dateB);
+      });
       
       let currentValue: number;
       let previousValue: number;
@@ -256,6 +260,7 @@ export const BreakoutCalculator: React.FC<BreakoutCalculatorProps> = ({
             <li><strong>Sum Method:</strong> Total volume/delivery for the period</li>
             <li><strong>Peak Method:</strong> Highest single day volume/delivery</li>
             <li>All results rounded to 2 decimal places</li>
+            <li>Only business days (Monday-Friday) are considered</li>
           </ul>
         </div>
       </div>

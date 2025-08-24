@@ -1,142 +1,137 @@
-// src/pages/Dashboard.tsx
 import React, { useState, useEffect } from "react";
-
-import { Sidebar, sectorIndexMap } from "../components/Sidebar";
-import { StockFiltersExtended } from "../components/Filters/StockFiltersExtended";
+import { Sidebar } from "../components/Sidebar";
+import { DatePickerComponent, DateSelectionMode } from "../components/DatePicker/DatePickerComponent";
+import { BreakoutCalculator } from "../components/BreakoutCalculator/BreakoutCalculator";
 import { StockTable } from "../components/Stock/StockTable";
 import { IndiceTable } from "../components/Indice/IndiceTable";
 import { NiftyList } from "../components/Nifty/NiftyList";
-
 import { useNiftyCompanies } from "../hooks/useNiftyCompanies";
 import { useStockData } from "../hooks/useStockData";
 import { useIndiceData } from "../hooks/useIndiceData";
 
 export const Dashboard = () => {
-    // Selected sector and its mapped index name
     const [selectedSector, setSelectedSector] = useState<string>("");
     const [selectedIndexName, setSelectedIndexName] = useState<string>("");
+    const [selectedDates, setSelectedDates] = useState<string[]>([]);
+    const [dateMode, setDateMode] = useState<DateSelectionMode>('custom');
+    const [volumeBreakouts, setVolumeBreakouts] = useState<any[]>([]);
+    const [deliveryBreakouts, setDeliveryBreakouts] = useState<any[]>([]);
 
-    // Filters state for dates and breakouts
-    const [filterDates, setFilterDates] = useState<string[]>([]);
-    const [volumeBreakout, setVolumeBreakout] = useState<boolean>(false);
-    const [deliveryBreakout, setDeliveryBreakout] = useState<boolean>(false);
-    const [deliveryMultiplier, setDeliveryMultiplier] = useState<number>(1.5);
-
-    // Change sector handler
     const handleSectorSelect = (sector: string, indexName: string) => {
         setSelectedSector(sector);
         setSelectedIndexName(indexName);
-
-        // Reset filters when sector changes
-        setFilterDates([]);
-        setVolumeBreakout(false);
-        setDeliveryBreakout(false);
-        setDeliveryMultiplier(1.5);
+        // Reset breakouts when sector changes
+        setVolumeBreakouts([]);
+        setDeliveryBreakouts([]);
     };
 
-    // Fetch companies belonging to the selected sector (treat sector as industry for this)
-    // This hook will return only companies for the sector
+    const handleDateChange = (dates: string[], mode: DateSelectionMode) => {
+        setSelectedDates(dates);
+        setDateMode(mode);
+    };
+
+    const handleBreakoutChange = (volumeBreakouts: any[], deliveryBreakouts: any[]) => {
+        setVolumeBreakouts(volumeBreakouts);
+        setDeliveryBreakouts(deliveryBreakouts);
+    };
+
+    // Fetch companies for selected sector
     const { data: companyData, loading: loadingCompanies } = useNiftyCompanies(
         selectedSector || undefined
     );
-    const sectorStocks = companyData?.niftyCompanies || [];
+    const sectorStocks = companyData?.niftyCompanies || companyData?.nifty50List || [];
 
-    // Extract symbols of sector stocks to query stock data
-    const sectorSymbols = sectorStocks.map((s) => s.Symbol);
+    // Extract symbols for stock data query
+    const sectorSymbols = sectorStocks.map((s: any) => s.Symbol);
 
-    // Fetch stockData for the selected symbols and date range
+    // Fetch stock data
     const { data: stockDataRaw, loading: loadingStockData } = useStockData(
-        filterDates,
+        selectedDates,
         sectorSymbols
     );
 
-    // Apply volume/delivery breakout filters client-side if requested
-    const filteredStockData = React.useMemo(() => {
-        if (!stockDataRaw?.stockData) return [];
-
-        let data = stockDataRaw.stockData;
-
-        if (volumeBreakout) {
-            data = data.filter((d) => {
-                // For volume breakout, volume of current date > previous date's volume for that symbol
-                // Implement client-side comparing current day vs previous day volume
-                // This requires grouping and sorting data by symbol and date
-                return true; // placeholder: implement actual logic
-            });
-        }
-
-        if (deliveryBreakout) {
-            data = data.filter((d) => {
-                // Similar delivery breakout filter by multiplier
-                // Implement actual comparison here
-                return true; // placeholder: implement actual logic
-            });
-        }
-
-        return data;
-    }, [stockDataRaw, volumeBreakout, deliveryBreakout, deliveryMultiplier]);
-
-    // Fetch indiceData for the selected index name and date range
+    // Fetch indice data
     const { data: indiceData, loading: loadingIndice } = useIndiceData(
-        filterDates,
+        selectedDates,
         selectedIndexName ? [selectedIndexName] : []
     );
 
+    const stockData = stockDataRaw?.stockData || [];
+
     return (
         <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-            <Sidebar onSelectSector={handleSectorSelect} />
+            <Sidebar onSelectSector={handleSectorSelect} selectedSector={selectedSector} />
 
-            <main
-                style={{
-                    padding: 24,
-                    flexGrow: 1,
-                    overflowY: "auto",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 24,
-                }}
-            >
+            <main className="apollo-container" style={{ 
+                flexGrow: 1, 
+                overflowY: "auto", 
+                padding: 'var(--apollo-space-6)',
+                display: "flex",
+                flexDirection: "column",
+                gap: 'var(--apollo-space-6)'
+            }}>
                 {selectedSector ? (
                     <>
-                        <h1>Sector: {selectedSector}</h1>
-                        <StockFiltersExtended
-                            onChange={({ dates, volumeBreakout, deliveryBreakout, deliveryMultiplier }) => {
-                                setFilterDates(dates);
-                                setVolumeBreakout(volumeBreakout);
-                                setDeliveryBreakout(deliveryBreakout);
-                                setDeliveryMultiplier(deliveryMultiplier);
-                            }}
-                        />
+                        <div>
+                            <h1 className="apollo-heading-1">
+                                {selectedSector} Sector Analysis
+                            </h1>
+                            <p className="apollo-text-muted">
+                                Comprehensive analysis of {selectedSector} sector stocks with breakout calculations
+                            </p>
+                        </div>
+
+                        <div className="apollo-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 'var(--apollo-space-6)' }}>
+                            <DatePickerComponent onChange={handleDateChange} />
+                            <BreakoutCalculator
+                                stockData={stockData}
+                                selectedDates={selectedDates}
+                                dateMode={dateMode}
+                                onBreakoutChange={handleBreakoutChange}
+                            />
+                        </div>
 
                         <section>
-                            <h2>Stocks (filtered by sector and filters)</h2>
-                            {loadingCompanies || loadingStockData ? (
-                                <p>Loading stock data...</p>
-                            ) : (
-                                <StockTable data={filteredStockData} />
-                            )}
+                            <StockTable 
+                                data={stockData} 
+                                volumeBreakouts={volumeBreakouts}
+                                deliveryBreakouts={deliveryBreakouts}
+                            />
                         </section>
 
-                        <section>
-                            <h2>Indice Data ({selectedIndexName})</h2>
-                            {loadingIndice ? (
-                                <p>Loading indice data...</p>
-                            ) : (
+                        <div className="apollo-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 'var(--apollo-space-6)' }}>
+                            <section>
                                 <IndiceTable data={indiceData?.indiceData} />
-                            )}
-                        </section>
+                            </section>
 
-                        <section>
-                            <h2>Companies in {selectedSector} Sector</h2>
-                            {loadingCompanies ? (
-                                <p>Loading companies...</p>
-                            ) : (
+                            <section>
                                 <NiftyList data={sectorStocks} />
-                            )}
-                        </section>
+                            </section>
+                        </div>
                     </>
                 ) : (
-                    <h1>Please select a sector from the sidebar.</h1>
+                    <div className="apollo-flex apollo-flex-col apollo-items-center" style={{ 
+                        justifyContent: 'center', 
+                        height: '60vh',
+                        textAlign: 'center'
+                    }}>
+                        <h1 className="apollo-heading-1">Financial Data Analysis</h1>
+                        <p className="apollo-text-muted" style={{ fontSize: 'var(--apollo-font-size-lg)', marginBottom: 'var(--apollo-space-8)' }}>
+                            Select a sector from the sidebar to begin your analysis
+                        </p>
+                        <div className="apollo-card" style={{ maxWidth: '500px', textAlign: 'left' }}>
+                            <div className="apollo-card-body">
+                                <h3 className="apollo-heading-3">Features Available:</h3>
+                                <ul style={{ margin: 0, paddingLeft: 'var(--apollo-space-6)' }}>
+                                    <li>Custom, weekly, and monthly date selection</li>
+                                    <li>Volume and delivery breakout calculations</li>
+                                    <li>Sector-specific stock filtering</li>
+                                    <li>Index performance tracking</li>
+                                    <li>Company listings by sector</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 )}
             </main>
         </div>
