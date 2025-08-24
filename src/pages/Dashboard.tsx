@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Sidebar } from "../components/Sidebar";
-import { DatePickerComponent, DateSelectionMode } from "../components/DatePicker/DatePickerComponent";
+import { DatePickerComponent, type DateSelectionMode } from "../components/DatePicker/DatePickerComponent";
 import { BreakoutCalculator } from "../components/BreakoutCalculator/BreakoutCalculator";
 import { StockTable } from "../components/Stock/StockTable";
 import { IndiceTable } from "../components/Indice/IndiceTable";

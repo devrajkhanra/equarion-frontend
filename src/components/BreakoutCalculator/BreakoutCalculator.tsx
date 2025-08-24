@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DateSelectionMode } from '../DatePicker/DatePickerComponent';
+import { type DateSelectionMode } from '../DatePicker/DatePickerComponent';
 
 export type BreakoutCalculatorProps = {
   stockData: any[];
